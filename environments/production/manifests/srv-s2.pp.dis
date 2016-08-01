@@ -1,0 +1,25 @@
+node 'srv-s2' {
+#===Install Docker===
+include 'eos2_cert'
+include 'docker'
+exec { 'docker-restart':
+    path     => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
+    command => 'service docker restart',
+    require => Service['docker']
+  }
+docker::image {'jenkins':}
+/*
+docker::run {'jenkins':
+  image           => 'jenkins',
+  ports           => ['8080', '8080'],
+  expose          => ['50001', '50000'],
+  remove_container_on_stop  => true,
+  remove_volume_on_stop     => true,
+}
+
+exec { 'docker_run_cloudbess':
+    command => '/usr/bin/docker run -d -p 7777:8080 -p 50001:50000 eos2darkside/cloudbees-master-mesos',
+}
+*/
+
+}

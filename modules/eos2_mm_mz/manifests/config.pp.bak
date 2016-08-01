@@ -1,0 +1,26 @@
+class eos2_mm_mz::config {
+file { '/etc/mesos/zk':
+    ensure  => present,
+    content  => template ('/etc/puppet/modules/eos2_mm_mz/templates/zk.erb'),
+}
+file { '/etc/mesos-master/quorum':
+    ensure  => present,
+    content => "2",
+}
+
+file { 'myid':
+    path    => '/var/lib/zookeeper',
+    ensure  => present,
+    require => Package['mesosphere-zookeeper'],
+#    source  => "puppet:///modules/eos2_mmz/myid",
+    content => "1",
+}
+file { '/etc/zookeeper/conf/zoo.cfg':
+    ensure  => present,
+    require => Package['mesosphere-zookeeper'],
+    content  => template ('/etc/puppet/modules/eos2_mm_mz/templates/zoo.cfg.erb'),
+}
+exec { 'zookeeper_restart':command => '/usr/bin/systemctl restart zookeeper.service',}
+exec { 'mesos_master_restart':command => '/usr/bin/systemctl restart mesos-master.service',}
+exec { 'marathon_restart':command => '/usr/bin/systemctl restart marathon.service',}
+}
